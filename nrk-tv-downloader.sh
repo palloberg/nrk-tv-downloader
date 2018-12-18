@@ -544,14 +544,15 @@ function program() {
 			echo " - Downloading subtitle"
 			# shellcheck disable=SC2086
 			curl $CURL_ "http://v8.psapi.nrk.no/programs/$program_id/subtitles/tt" |
-				tt-to-subrip >"$localfile.no.srt.new"
-			if [ -s "$localfile.no.srt.new" ] && [ ! -e "$localfile.no.srt" ] ; then
-				printf " - Fetched sutitle from %s\n" "http://v8.psapi.nrk.no/programs/$program_id/subtitles/tt"
-				mv "$localfile.no.srt.new" "$localfile.no.srt"
+				tt-to-subrip >"$localfile.srt.new"
+
+			# Only write SRT file if the downloaded file is not empty and no SRT exists
+			if [ -s "$localfile.srt.new" ] && [ ! -e "$localfile.srt" ] ; then
+				mv "$localfile.srt.new" "$localfile.srt"
 			else
-				printf " - NOT overwriting sutitle %s\n" "$localfile.no.srt"
-				rm "$localfile.no.srt.new"
+				rm "$localfile.srt.new"
 			fi
+
 		elif $SUB_DOWNLOADER && ! $IS_RADIO; then
 			if [ "$subtitle" == "true" ]; then
 				printf " - Subtitle is %s\n" \
