@@ -549,7 +549,15 @@ function program() {
 			echo " - Downloading subtitle"
 			subtitle_file="$localfile.srt"
 			$CURL_ "http://psapi.nrk.no/programs/$program_id/subtitles/tt" |
-				gawk -f "$TT_TO_SUBRIP" >"$subtitle_file"
+				gawk -f "$TT_TO_SUBRIP" >"$subtitle_file.new"
+
+			# Only write SRT file if the downloaded file is not empty and no SRT exists
+			if [ -s "$subtitle_file.new" ] && [ ! -e "$subtitle_file" ] ; then
+				mv "$subtitle_file.new" "$subtitle_file"
+			else
+				rm "$subtitle_file.new"
+			fi
+
 
 		elif $SUB_DOWNLOADER && ! $IS_RADIO; then
 			if [ "$subtitle" == "true" ]; then
